@@ -1,8 +1,8 @@
 import { type PropsWithChildren } from "react";
 
 import Head from "next/head";
-import { Noto_Sans } from "@next/font/google";
-import { Noto_Sans_Mono } from "@next/font/google";
+import { Noto_Sans } from "next/font/google";
+import { Noto_Sans_Mono } from "next/font/google";
 
 const noto = Noto_Sans({
   weight: ["400", "600"],
