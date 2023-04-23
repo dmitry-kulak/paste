@@ -1,9 +1,11 @@
 import { type NextPage } from "next";
 
+import PasteInput from "@/components/paste-input/paste-input";
+
 const Home: NextPage = () => {
   return (
     <>
-      <div>Big text or smth idk</div>
+      <PasteInput />
     </>
   );
 };
