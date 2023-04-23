@@ -18,5 +18,6 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  transpilePackages: ['react-syntax-highlighter'],
 };
 export default config;
