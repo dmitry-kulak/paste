@@ -1,7 +1,9 @@
 import type { FormEventHandler, ChangeEventHandler } from "react";
-import { useEffect, useState } from "react";
-import { z } from "zod";
+import { useRouter } from "next/router";
+import { toast } from "react-hot-toast";
 
+import { PasteSchema } from "@/model/paste";
+import { api } from "@/utils/api";
 import LabeledInput from "./labeled-input";
 
 // resizes text area to fit text
@@ -10,23 +12,13 @@ const autoResize: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
   e.target.style.height = `${e.target.scrollHeight}px`;
 };
 
-const PasteSchema = z.object({
-  paste: z.string().nonempty("Must not be empty!"),
-  name: z
-    .string()
-    .trim()
-    .transform((name) => (name === "" ? undefined : name))
-    .optional(),
-});
-
 const PasteInput = () => {
-  const [emptyPasteError, setEmptyPasteError] = useState("");
+  const router = useRouter();
 
-  useEffect(() => {
-    if (emptyPasteError) {
-      window.scrollTo(0, 0);
-    }
-  }, [emptyPasteError]);
+  const { mutate: createPaste } = api.paste.create.useMutation({
+    onError: ({ message }) => toast.error(message),
+    onSuccess: (paste) => router.push(paste.id),
+  });
 
   const onSubmit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
@@ -34,16 +26,12 @@ const PasteInput = () => {
     const formData = Object.fromEntries(new FormData(e.currentTarget));
     const result = PasteSchema.safeParse(formData);
     if (result.success) {
-      setEmptyPasteError("");
-      console.log(result.data);
-      // submit
+      toast.success("Uploading");
+      createPaste(result.data);
     } else {
       const errors = result.error.format();
 
-      const newEmptyPasteError =
-        errors.paste?._errors.join(", ") ?? emptyPasteError;
-      setEmptyPasteError(newEmptyPasteError);
-      newEmptyPasteError && window.scrollTo(0, 0);
+      errors.paste && toast.error(errors.paste?._errors.join(", "));
     }
   };
 
@@ -51,10 +39,6 @@ const PasteInput = () => {
     <form onSubmit={onSubmit}>
       <div className="flex flex-col gap-2">
         <h1 className="text-lg font-semibold">New Paste</h1>
-
-        {emptyPasteError && (
-          <div className="bg-red-600 p-2">{emptyPasteError}</div>
-        )}
 
         <textarea
           className="min-h-[300px] w-full resize-none bg-zinc-800 px-2 py-1 font-mono text-slate-100 outline-none"
