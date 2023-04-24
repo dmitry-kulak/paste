@@ -1,5 +1,10 @@
 import { type CSSProperties, useEffect, useState } from "react";
-import type { GetStaticProps, InferGetStaticPropsType, NextPage } from "next";
+import type {
+  GetStaticPaths,
+  GetStaticProps,
+  InferGetStaticPropsType,
+  NextPage,
+} from "next";
 import SyntaxHighlighter from "react-syntax-highlighter";
 
 import { prisma } from "@/server/db";
@@ -15,6 +20,7 @@ const PastePage: NextPage<PastePageProps> = ({
   const [style, setStyle] = useState<{ [p: string]: CSSProperties }>();
 
   useEffect(() => {
+    // makes style work in nextjs
     void import("react-syntax-highlighter/dist/esm/styles/hljs/dracula").then(
       (mod) => setStyle(mod.default)
     );
@@ -42,7 +48,7 @@ const PastePage: NextPage<PastePageProps> = ({
           {paste}
         </SyntaxHighlighter>
       ) : (
-        "Loading..."
+        <h1 className="text-center">Loading paste...</h1>
       )}
     </>
   );
@@ -68,6 +74,15 @@ export const getStaticProps = (async (context) => {
   };
 }) satisfies GetStaticProps;
 
-export const getStaticPaths = () => {
-  return { paths: [], fallback: "blocking" };
+export const getStaticPaths: GetStaticPaths = async () => {
+  const pastesIds = await prisma.paste.findMany({
+    select: { id: true },
+    orderBy: { createdAt: "desc" },
+    take: 1000,
+  });
+
+  return {
+    paths: pastesIds.map(({ id }) => ({ params: { pasteId: id } })),
+    fallback: "blocking",
+  };
 };
