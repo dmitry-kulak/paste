@@ -3,6 +3,7 @@
  * for Docker builds.
  */
 await import("./src/env.mjs");
+import analyzer from "@next/bundle-analyzer"
 
 /** @type {import("next").NextConfig} */
 const config = {
@@ -20,4 +21,10 @@ const config = {
   },
   transpilePackages: ['react-syntax-highlighter'],
 };
-export default config;
+
+const withBundleAnalyzer = analyzer({
+  enabled: process.env.ANALYZE === 'true',
+})
+
+
+export default withBundleAnalyzer(config);
