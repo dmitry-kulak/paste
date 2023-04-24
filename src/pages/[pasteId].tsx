@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { GetStaticProps, InferGetStaticPropsType, NextPage } from "next";
+import { type CSSProperties, useEffect, useState } from "react";
+import type { GetStaticProps, InferGetStaticPropsType, NextPage } from "next";
 import SyntaxHighlighter from "react-syntax-highlighter";
 
 import { prisma } from "@/server/db";
@@ -12,11 +12,10 @@ const PastePage: NextPage<PastePageProps> = ({
   name,
   language,
 }) => {
-  const [style, setStyle] = useState();
+  const [style, setStyle] = useState<{ [p: string]: CSSProperties }>();
 
   useEffect(() => {
-    import("react-syntax-highlighter/dist/esm/styles/hljs/dracula").then(
-      // @ts-ignore
+    void import("react-syntax-highlighter/dist/esm/styles/hljs/dracula").then(
       (mod) => setStyle(mod.default)
     );
   }, []);
@@ -24,17 +23,20 @@ const PastePage: NextPage<PastePageProps> = ({
   return (
     <>
       <div className="mb-1 flex justify-between">
-        <span>Created at {createdAt}</span>
-        {name && <span>by {name}</span>}
+        <span>
+          {name && `${name}. `}Created at {createdAt}
+        </span>
 
-        <span className="font-mono text-[#f1fa8c]">{language}</span>
+        {language && (
+          <span className="font-mono text-[#f1fa8c]">{language}</span>
+        )}
       </div>
 
       {style ? (
         <SyntaxHighlighter
           wrapLongLines
           showLineNumbers
-          language={language}
+          language={language || undefined}
           style={style}
         >
           {paste}
@@ -48,7 +50,7 @@ const PastePage: NextPage<PastePageProps> = ({
 
 export default PastePage;
 
-const { format } = new Intl.DateTimeFormat();
+const formatter = new Intl.DateTimeFormat();
 
 export const getStaticProps = (async (context) => {
   const pasteId = context.params?.pasteId;
@@ -56,13 +58,12 @@ export const getStaticProps = (async (context) => {
 
   const paste = await prisma.paste.findUnique({ where: { id: pasteId } });
 
-  if (!paste) throw new Error("No paste");
+  if (!paste) return { notFound: true };
 
   return {
     props: {
       ...paste,
-      createdAt: format(paste.createdAt),
-      language: "typescript",
+      createdAt: formatter.format(paste.createdAt),
     },
   };
 }) satisfies GetStaticProps;

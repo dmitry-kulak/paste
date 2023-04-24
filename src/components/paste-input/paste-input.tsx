@@ -1,10 +1,31 @@
 import type { FormEventHandler, ChangeEventHandler } from "react";
+import { memo } from "react";
 import { useRouter } from "next/router";
 import { toast } from "react-hot-toast";
 
-import { PasteSchema } from "@/model/paste";
+import { languages, PasteSchema } from "@/model/paste";
 import { api } from "@/utils/api";
 import LabeledInput from "./labeled-input";
+
+const LanguagesDropdown = memo(() => (
+  <div className="grid grid-cols-3 items-center">
+    <label className="col-span-1" htmlFor="language">
+      Language
+    </label>
+
+    <select
+      name="language"
+      className="col-span-2 bg-zinc-800 px-2 py-1 text-slate-100 outline-none"
+    >
+      {["No language", ...languages].map((language) => (
+        <option value={language} key={language}>
+          {language}
+        </option>
+      ))}
+    </select>
+  </div>
+));
+LanguagesDropdown.displayName = "LanguagesDropdown";
 
 // resizes text area to fit text
 const autoResize: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
@@ -29,9 +50,11 @@ const PasteInput = () => {
     if (result.success) {
       createPaste(result.data);
     } else {
-      const errors = result.error.format();
+      const errors = result.error.flatten();
 
-      errors.paste && toast.error(errors.paste?._errors.join(", "));
+      Object.values(errors.fieldErrors).forEach((field) =>
+        field.forEach((error) => toast.error(error))
+      );
     }
   };
 
@@ -54,7 +77,12 @@ const PasteInput = () => {
         <h2 className="font-semibold">Optional Paste Settings</h2>
         <div className="flex max-w-xs flex-col gap-4">
           <LabeledInput label="Paste name" name="name" />
-          <button className="place-self-start" type="submit">
+          <LanguagesDropdown />
+
+          <button
+            className="place-self-start rounded  bg-zinc-800 px-3 py-2"
+            type="submit"
+          >
             {isUploadingPaste ? "Creating..." : "Create new Paste"}
           </button>
         </div>
