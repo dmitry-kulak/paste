@@ -15,10 +15,11 @@ const autoResize: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
 const PasteInput = () => {
   const router = useRouter();
 
-  const { mutate: createPaste } = api.paste.create.useMutation({
-    onError: ({ message }) => toast.error(message),
-    onSuccess: (paste) => router.push(paste.id),
-  });
+  const { mutate: createPaste, isLoading: isUploadingPaste } =
+    api.paste.create.useMutation({
+      onError: ({ message }) => toast.error(message),
+      onSuccess: (paste) => router.push(paste.id),
+    });
 
   const onSubmit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
@@ -26,7 +27,6 @@ const PasteInput = () => {
     const formData = Object.fromEntries(new FormData(e.currentTarget));
     const result = PasteSchema.safeParse(formData);
     if (result.success) {
-      toast.success("Uploading");
       createPaste(result.data);
     } else {
       const errors = result.error.format();
@@ -55,7 +55,7 @@ const PasteInput = () => {
         <div className="flex max-w-xs flex-col gap-4">
           <LabeledInput label="Paste name" name="name" />
           <button className="place-self-start" type="submit">
-            Create new Paste
+            {isUploadingPaste ? "Creating..." : "Create new Paste"}
           </button>
         </div>
       </div>
