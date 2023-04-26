@@ -1,4 +1,3 @@
-import { type CSSProperties, useEffect, useState } from "react";
 import type {
   GetStaticPaths,
   GetStaticProps,
@@ -6,6 +5,7 @@ import type {
   NextPage,
 } from "next";
 import SyntaxHighlighter from "react-syntax-highlighter";
+import dracula from "react-syntax-highlighter/dist/esm/styles/hljs/dracula";
 
 import { prisma } from "@/server/db";
 import { formatter } from "@/shared";
@@ -18,15 +18,6 @@ const PastePage: NextPage<PastePageProps> = ({
   name,
   language,
 }) => {
-  const [style, setStyle] = useState<{ [p: string]: CSSProperties }>();
-
-  useEffect(() => {
-    // makes style work in nextjs
-    void import("react-syntax-highlighter/dist/esm/styles/hljs/dracula").then(
-      (mod) => setStyle(mod.default)
-    );
-  }, []);
-
   return (
     <>
       <div className="mb-1 flex justify-between">
@@ -39,18 +30,14 @@ const PastePage: NextPage<PastePageProps> = ({
         )}
       </div>
 
-      {style ? (
-        <SyntaxHighlighter
-          wrapLongLines
-          showLineNumbers
-          language={language || undefined}
-          style={style}
-        >
-          {paste}
-        </SyntaxHighlighter>
-      ) : (
-        <h1 className="text-center">Loading paste...</h1>
-      )}
+      <SyntaxHighlighter
+        wrapLongLines
+        showLineNumbers
+        language={language || undefined}
+        style={dracula}
+      >
+        {paste}
+      </SyntaxHighlighter>
     </>
   );
 };
