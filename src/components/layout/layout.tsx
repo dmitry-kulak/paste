@@ -25,7 +25,9 @@ const Header = () => (
         Paste
       </Link>
       <Link href="/">New</Link>
-      <Link href="/feed">Feed</Link>
+      <Link prefetch={false} href="/feed">
+        Feed
+      </Link>
     </div>
 
     <div className="flex gap-4">
