@@ -1,17 +1,15 @@
 import { z } from "zod";
 import SyntaxHighlighter from "react-syntax-highlighter";
 
-export const languages = SyntaxHighlighter.supportedLanguages.slice();
+export const NO_LANGUAGE = "No language";
+
+export const languages: ReadonlyArray<string> = [
+  NO_LANGUAGE,
+  ...SyntaxHighlighter.supportedLanguages,
+];
 
 export const PasteSchema = z.object({
   paste: z.string().nonempty("You need to write some paste!"),
-  name: z
-    .string()
-    .trim()
-    .transform((name) => (name === "" ? undefined : name))
-    .optional(),
-  language: z
-    .string()
-    .transform((name) => (name === "No language" ? undefined : name))
-    .optional(),
+  name: z.string().trim().optional(),
+  language: z.string().optional(),
 });

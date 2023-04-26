@@ -5,12 +5,18 @@ import { useRouter } from "next/router";
 
 import { api } from "@/utils/api";
 import { formatter } from "@/shared";
+import { NO_LANGUAGE } from "@/model/paste";
 
 type FeedPasteContentProps = { paste: Paste };
 
 const FeedPasteContent = ({ paste }: FeedPasteContentProps) => {
   const name = paste.name ? `${paste.name}, ` : null;
-  const language = paste.language ? `Written in ${paste.language}.` : null;
+  const language =
+    paste.language && paste.language !== NO_LANGUAGE ? (
+      <>
+        Written in <span className="text-[#f1fa8c]">{paste.language}</span>.
+      </>
+    ) : null;
   const date = language
     ? formatter.format(paste.createdAt) + ". "
     : formatter.format(paste.createdAt);

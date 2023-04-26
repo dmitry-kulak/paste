@@ -9,6 +9,7 @@ import dracula from "react-syntax-highlighter/dist/esm/styles/hljs/dracula";
 
 import { prisma } from "@/server/db";
 import { formatter } from "@/shared";
+import { NO_LANGUAGE } from "@/model/paste";
 
 type PastePageProps = InferGetStaticPropsType<typeof getStaticProps>;
 
@@ -25,7 +26,7 @@ const PastePage: NextPage<PastePageProps> = ({
           {name && `${name}. `}Created at {createdAt}
         </span>
 
-        {language && (
+        {language !== NO_LANGUAGE && (
           <span className="font-mono text-[#f1fa8c]">{language}</span>
         )}
       </div>

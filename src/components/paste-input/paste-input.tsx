@@ -17,7 +17,7 @@ const LanguagesDropdown = memo(() => (
       name="language"
       className="col-span-2 bg-zinc-800 px-2 py-1 text-slate-100 outline-none"
     >
-      {["No language", ...languages].map((language) => (
+      {languages.map((language) => (
         <option value={language} key={language}>
           {language}
         </option>

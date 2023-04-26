@@ -2,25 +2,10 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import { languages, PasteSchema } from "@/model/paste";
-
-const languagesRecord = languages.reduce<Record<string, boolean>>(
-  (acc, language) => {
-    acc[language] = true;
-    return acc;
-  },
-  {}
-);
+import { PasteSchema } from "@/model/paste";
 
 export const pasteRouter = createTRPCRouter({
   create: publicProcedure.input(PasteSchema).mutation(({ ctx, input }) => {
-    if (input.language && !languagesRecord[input.language]) {
-      throw new TRPCError({
-        code: "BAD_REQUEST",
-        message: `Language ${input.language} is not supported (are you proud of yourself?)`,
-      });
-    }
-
     return ctx.prisma.paste.create({ data: input });
   }),
 
