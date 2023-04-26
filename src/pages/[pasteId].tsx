@@ -8,6 +8,7 @@ import type {
 import SyntaxHighlighter from "react-syntax-highlighter";
 
 import { prisma } from "@/server/db";
+import { formatter } from "@/shared";
 
 type PastePageProps = InferGetStaticPropsType<typeof getStaticProps>;
 
@@ -55,8 +56,6 @@ const PastePage: NextPage<PastePageProps> = ({
 };
 
 export default PastePage;
-
-const formatter = new Intl.DateTimeFormat();
 
 export const getStaticProps = (async (context) => {
   const pasteId = context.params?.pasteId;

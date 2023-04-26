@@ -35,4 +35,15 @@ export const pasteRouter = createTRPCRouter({
 
     return paste;
   }),
+
+  getAll: publicProcedure.query(async ({ ctx }) => {
+    const pastes = await ctx.prisma.paste.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 10,
+    });
+    return pastes.map((paste) => ({
+      ...paste,
+      paste: paste.paste.substring(0, 300),
+    }));
+  }),
 });
