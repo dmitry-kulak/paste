@@ -19,6 +19,7 @@ const PastePage: NextPage<PastePageProps> = ({
   name,
   language,
 }) => {
+  const isLanguage = language && language !== NO_LANGUAGE;
   return (
     <>
       <div className="mb-1 flex justify-between">
@@ -26,7 +27,7 @@ const PastePage: NextPage<PastePageProps> = ({
           {name && `${name}. `}Created at {createdAt}
         </span>
 
-        {language !== NO_LANGUAGE && (
+        {isLanguage && (
           <span className="font-mono text-[#f1fa8c]">{language}</span>
         )}
       </div>
@@ -34,7 +35,7 @@ const PastePage: NextPage<PastePageProps> = ({
       <SyntaxHighlighter
         wrapLongLines
         showLineNumbers
-        language={language || undefined}
+        language={isLanguage ? language : undefined}
         style={dracula}
       >
         {paste}
