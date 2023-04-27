@@ -38,10 +38,15 @@ const FeedPasteContent = ({ paste }: FeedPasteContentProps) => {
       onClick={goToPaste}
       onMouseEnter={prefetchPaste}
     >
-      <header className="border-b border-zinc-700 pb-1">
-        {name}
-        {date}
-        {language}
+      <header className="border-b border-zinc-700 pb-1 flex justify-between">
+        <span>
+          {name}
+          {date}
+          {language}
+        </span>
+        <span>
+          {paste.exposure} exposure
+        </span>
       </header>
       <pre>
         <code className="line-clamp-6 font-mono">{text}</code>

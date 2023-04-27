@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import { PasteSchema } from "@/model/paste";
+import { ExposureType, PasteSchema } from "@/model/paste";
 
 export const pasteRouter = createTRPCRouter({
   create: publicProcedure.input(PasteSchema).mutation(({ ctx, input }) => {
@@ -22,10 +22,14 @@ export const pasteRouter = createTRPCRouter({
   }),
 
   getAll: publicProcedure.query(async ({ ctx }) => {
+    const publicExposure: ExposureType = "Public";
+
     const pastes = await ctx.prisma.paste.findMany({
       orderBy: { createdAt: "desc" },
+      where: { exposure: publicExposure },
       take: 10,
     });
+
     return pastes.map((paste) => ({
       ...paste,
       paste: paste.paste.substring(0, 300),

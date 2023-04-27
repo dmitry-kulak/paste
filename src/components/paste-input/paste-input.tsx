@@ -1,31 +1,12 @@
-import type { FormEventHandler, ChangeEventHandler } from "react";
-import { memo } from "react";
+import type { ChangeEventHandler, FormEventHandler } from "react";
+import type { Paste } from "@prisma/client";
 import { useRouter } from "next/router";
 import { toast } from "react-hot-toast";
 
-import { languages, PasteSchema } from "@/model/paste";
+import { exposureTypes, languages, PasteSchema } from "@/model/paste";
 import { api } from "@/utils/api";
 import LabeledInput from "./labeled-input";
-
-const LanguagesDropdown = memo(() => (
-  <div className="grid grid-cols-3 items-center">
-    <label className="col-span-1" htmlFor="language">
-      Language
-    </label>
-
-    <select
-      name="language"
-      className="col-span-2 bg-zinc-800 px-2 py-1 text-slate-100 outline-none"
-    >
-      {languages.map((language) => (
-        <option value={language} key={language}>
-          {language}
-        </option>
-      ))}
-    </select>
-  </div>
-));
-LanguagesDropdown.displayName = "LanguagesDropdown";
+import Dropdown from "./dropdown";
 
 // resizes text area to fit text
 const autoResize: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
@@ -35,11 +16,15 @@ const autoResize: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
 
 const PasteInput = () => {
   const router = useRouter();
+  const invalidatePastes = api.useContext().paste.getAll.invalidate;
+  const openNewPaste = (paste: Paste) => (
+    invalidatePastes().catch(console.error), router.push(paste.id)
+  );
 
   const { mutate: createPaste, isLoading: isUploadingPaste } =
     api.paste.create.useMutation({
       onError: ({ message }) => toast.error(message),
-      onSuccess: (paste) => router.push(paste.id),
+      onSuccess: openNewPaste,
     });
 
   const onSubmit: FormEventHandler<HTMLFormElement> = (e) => {
@@ -77,7 +62,8 @@ const PasteInput = () => {
         <h2 className="font-semibold">Optional Paste Settings</h2>
         <div className="flex max-w-xs flex-col gap-4">
           <LabeledInput label="Paste name" name="name" />
-          <LanguagesDropdown />
+          <Dropdown label="Languages" name="language" options={languages} />
+          <Dropdown label="Exposure" name="exposure" options={exposureTypes} />
 
           <button
             className="place-self-start rounded  bg-zinc-800 px-3 py-2"

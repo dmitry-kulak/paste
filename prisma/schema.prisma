@@ -20,7 +20,8 @@ model Paste {
   createdAt DateTime @default(now())
   paste     String
   name      String?
-  language  String?
+  language  String
+  exposure  String
 }
 
 // Necessary for Next auth
