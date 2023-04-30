@@ -20,6 +20,15 @@ const config = {
     defaultLocale: "en",
   },
   transpilePackages: ['react-syntax-highlighter'],
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+      },
+    ],
+  },
+
 };
 
 const withBundleAnalyzer = analyzer({
