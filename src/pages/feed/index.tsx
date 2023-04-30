@@ -38,14 +38,11 @@ const FeedPasteContent = ({ paste }: FeedPasteContentProps) => {
       onClick={goToPaste}
       onMouseEnter={prefetchPaste}
     >
-      <header className="border-b border-zinc-700 pb-1 flex justify-between">
+      <header className="flex justify-between border-b border-zinc-700 pb-1">
         <span>
           {name}
           {date}
           {language}
-        </span>
-        <span>
-          {paste.exposure} exposure
         </span>
       </header>
       <pre>

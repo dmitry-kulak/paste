@@ -18,13 +18,14 @@ const PastePage: NextPage<PastePageProps> = ({
   createdAt,
   name,
   language,
+  exposure,
 }) => {
   const isLanguage = language && language !== NO_LANGUAGE;
   return (
     <>
       <div className="mb-1 flex justify-between">
         <span>
-          {name && `${name}. `}Created at {createdAt}
+          {name && `${name}. `}Created at {createdAt}. {exposure} exposure
         </span>
 
         {isLanguage && (
