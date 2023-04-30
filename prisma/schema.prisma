@@ -22,6 +22,8 @@ model Paste {
   name      String?
   language  String
   exposure  String
+  author    User? @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  String?
 }
 
 // Necessary for Next auth
@@ -59,6 +61,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  pastes        Paste[]
 }
 
 model VerificationToken {

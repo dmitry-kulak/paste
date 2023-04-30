@@ -8,8 +8,20 @@ export const languages = [
   ...SyntaxHighlighter.supportedLanguages,
 ] as const;
 
-export const exposureTypes = ["Public", "Unlisted", "Private"] as const;
-export type ExposureType = (typeof exposureTypes)[number];
+const ExposureTypes = {
+  Public: "Public",
+  Unlisted: "Unlisted",
+  Private: "Private",
+} as const;
+
+const { Public, Private, Unlisted } = ExposureTypes;
+
+export type ExposureType = keyof typeof ExposureTypes;
+export const exposureTypes = [Public, Unlisted, Private] as const;
+
+export const disabledExposure: { [ExposureTypes.Private]: true } = {
+  Private: true,
+};
 
 export const PasteSchema = z.object({
   paste: z.string().nonempty("You need to write some paste!"),

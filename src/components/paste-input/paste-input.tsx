@@ -2,8 +2,14 @@ import type { ChangeEventHandler, FormEventHandler } from "react";
 import type { Paste } from "@prisma/client";
 import { useRouter } from "next/router";
 import { toast } from "react-hot-toast";
+import { useSession } from "next-auth/react";
 
-import { exposureTypes, languages, PasteSchema } from "@/model/paste";
+import {
+  disabledExposure,
+  exposureTypes,
+  languages,
+  PasteSchema,
+} from "@/model/paste";
 import { api } from "@/utils/api";
 import LabeledInput from "./labeled-input";
 import Dropdown from "./dropdown";
@@ -20,6 +26,8 @@ const PasteInput = () => {
   const openNewPaste = (paste: Paste) => (
     invalidatePastes().catch(console.error), router.push(paste.id)
   );
+
+  const { status } = useSession();
 
   const { mutate: createPaste, isLoading: isUploadingPaste } =
     api.paste.create.useMutation({
@@ -63,7 +71,14 @@ const PasteInput = () => {
         <div className="flex max-w-xs flex-col gap-4">
           <LabeledInput label="Paste name" name="name" />
           <Dropdown label="Languages" name="language" options={languages} />
-          <Dropdown label="Exposure" name="exposure" options={exposureTypes} />
+          <Dropdown
+            label="Exposure"
+            name="exposure"
+            options={exposureTypes}
+            disabledOptions={
+              status === "unauthenticated" ? disabledExposure : undefined
+            }
+          />
 
           <button
             className="place-self-start rounded  bg-zinc-800 px-3 py-2"

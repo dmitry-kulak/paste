@@ -1,13 +1,14 @@
 import type { NextPage } from "next";
-import type { Paste } from "@prisma/client";
 import type { MouseEventHandler } from "react";
 import { useRouter } from "next/router";
 
-import { api } from "@/utils/api";
+import { api, RouterOutputs } from "@/utils/api";
 import { formatter } from "@/shared";
 import { NO_LANGUAGE } from "@/model/paste";
 
-type FeedPasteContentProps = { paste: Paste };
+type FeedPasteContentProps = {
+  paste: RouterOutputs["paste"]["getAll"][number];
+};
 
 const FeedPasteContent = ({ paste }: FeedPasteContentProps) => {
   const name = paste.name ? `${paste.name}, ` : null;
@@ -17,9 +18,8 @@ const FeedPasteContent = ({ paste }: FeedPasteContentProps) => {
         Written in <span className="text-[#f1fa8c]">{paste.language}</span>.
       </>
     ) : null;
-  const date = language
-    ? formatter.format(paste.createdAt) + ". "
-    : formatter.format(paste.createdAt);
+  const author = paste.author ? `By ${paste.author.name}. ` : null;
+  const date = formatter.format(paste.createdAt) + ". ";
   const text = paste.paste;
 
   const router = useRouter();
@@ -42,6 +42,7 @@ const FeedPasteContent = ({ paste }: FeedPasteContentProps) => {
         <span>
           {name}
           {date}
+          {author}
           {language}
         </span>
       </header>
